@@ -4,14 +4,18 @@ import json
 
 app = Flask(__name__)
 
-locations = {}
+locations = []
 
 
 @app.route('/location.send', methods=['POST'])
 def location_send():
     data = request.get_json()
+    if not (data.get('long', False) and data.get('lat', False)):
+        return Response(status=400)
+    with open('input.txt', 'a') as f:
+        f.write(str(data))
     long, lat = data['long'], data['lat']
-    locations[datetime.now().isoformat()] = (long, lat)
+    locations.append((datetime.now().isoformat(), long, lat))
     return Response(status=200)
 
 
